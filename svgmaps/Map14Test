@@ -22,13 +22,14 @@
             -moz-user-select: none; /* For Firefox */
             -ms-user-select: none; /* For Internet Explorer */
         }
+        }
     </style>
 </head>
 <body>
 
 <div id="map-container">
     <!-- Your SVG content goes here -->
-    <svg id="svg-map" viewBox="0 0 1000 500" width="100%" height="100%">
+    <svg id="svg-map" viewBox="0 0 1000 500" width="100%" height="100%"> 
         <!-- INSERT SVG CONTENT FROM FILE HERE -->
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
@@ -2849,21 +2850,10 @@
 
     svg.addEventListener("mousemove", (e) => {
         if (!isPanning) return;
-
         let dx = (startX - e.clientX) * (viewBox.width / svg.clientWidth);
         let dy = (startY - e.clientY) * (viewBox.height / svg.clientHeight);
-
-        // Calculate new position but prevent panning off into blank space
-        let newX = startViewBoxX + dx;
-        let newY = startViewBoxY + dy;
-
-        // Ensure the new viewBox values are within the bounds
-        newX = Math.min(0, Math.max(newX, -(viewBox.width - svg.clientWidth)));
-        newY = Math.min(0, Math.max(newY, -(viewBox.height - svg.clientHeight)));
-
-        viewBox.x = newX;
-        viewBox.y = newY;
-
+        viewBox.x = startViewBoxX + dx;
+        viewBox.y = startViewBoxY + dy;
         updateViewBox();
     });
 
@@ -2879,27 +2869,20 @@
 
     svg.addEventListener("wheel", (e) => {
         e.preventDefault();
-
         let zoom = e.deltaY > 0 ? zoomFactor : 1 / zoomFactor;
-
-        // Calculate mouse position in the SVG coordinates
         let mouseX = (e.clientX / svg.clientWidth) * viewBox.width + viewBox.x;
         let mouseY = (e.clientY / svg.clientHeight) * viewBox.height + viewBox.y;
         
-        // Update the viewBox width and height based on zoom
         viewBox.width *= zoom;
         viewBox.height *= zoom;
-
-        // Adjust the viewBox position to keep the zoom focused on the mouse position
         viewBox.x = mouseX - (mouseX - viewBox.x) * zoom;
         viewBox.y = mouseY - (mouseY - viewBox.y) * zoom;
 
-        // Update the SVG's viewBox attribute
         updateViewBox();
     });
 
     function updateViewBox() {
-        svg.setAttribute("viewBox", `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+        svg.setAttribute("viewBox", ${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height});
     }
 </script>
 
