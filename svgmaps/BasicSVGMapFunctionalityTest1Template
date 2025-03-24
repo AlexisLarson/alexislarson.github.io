@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoomable & Pannable SVG Map</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #map-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        svg {
+            border: 1px solid #aaa;
+            cursor: grab;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map-container">
+    <!-- Your SVG content goes here -->
+    <svg id="svg-map" viewBox="0 0 1000 500" width="80%" height="80%">
+        <!-- INSERT SVG CONTENT FROM FILE HERE -->
+    </svg>
+</div>
+
+<script>
+    const svg = document.getElementById("svg-map");
+    let viewBox = { x: 0, y: 0, width: 1000, height: 500 };
+    let isPanning = false, startX, startY, startViewBoxX, startViewBoxY;
+    let zoomFactor = 1.1;
+
+    svg.addEventListener("mousedown", (e) => {
+        isPanning = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startViewBoxX = viewBox.x;
+        startViewBoxY = viewBox.y;
+        svg.style.cursor = "grabbing";
+    });
+
+    svg.addEventListener("mousemove", (e) => {
+        if (!isPanning) return;
+        let dx = (startX - e.clientX) * (viewBox.width / svg.clientWidth);
+        let dy = (startY - e.clientY) * (viewBox.height / svg.clientHeight);
+        viewBox.x = startViewBoxX + dx;
+        viewBox.y = startViewBoxY + dy;
+        updateViewBox();
+    });
+
+    svg.addEventListener("mouseup", () => {
+        isPanning = false;
+        svg.style.cursor = "grab";
+    });
+
+    svg.addEventListener("mouseleave", () => {
+        isPanning = false;
+        svg.style.cursor = "grab";
+    });
+
+    svg.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        let zoom = e.deltaY > 0 ? zoomFactor : 1 / zoomFactor;
+        let mouseX = (e.clientX / svg.clientWidth) * viewBox.width + viewBox.x;
+        let mouseY = (e.clientY / svg.clientHeight) * viewBox.height + viewBox.y;
+        
+        viewBox.width *= zoom;
+        viewBox.height *= zoom;
+        viewBox.x = mouseX - (mouseX - viewBox.x) * zoom;
+        viewBox.y = mouseY - (mouseY - viewBox.y) * zoom;
+
+        updateViewBox();
+    });
+
+    function updateViewBox() {
+        svg.setAttribute("viewBox", `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+    }
+</script>
+
+</body>
+</html>
